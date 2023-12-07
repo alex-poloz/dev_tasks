@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: CronJob
+metadata:
+  name: my-app-cronjob
+spec:
+  schedule: "*/5 * * * *"  # Run every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: demo
+        spec:
+          containers:
+            - image: gcr.io/mimetic-radio-405219/demo:v1.0.0
+              name: app
+              ports:
+                - containerPort: 8000
+                  name: http
