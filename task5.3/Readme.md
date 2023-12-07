@@ -1,54 +1,33 @@
 # Recommended YAML manifests
 
 ## Task steps
-1. Create an [API key](https://platform.openai.com/account/api-keys)  
-`key name: name: kubectl-ai`  
+1. Create an [API key](https://platform.openai.com/account/api-keys)   
 
 2. Install and configure [the kubectl-ai plugin](https://github.com/sozercan/kubectl-ai)
-```sh
-$ wget https://github.com/sozercan/kubectl-ai/releases/download/v0.0.11/kubectl-ai_linux_amd64.tar.gz
-$ tar -zxvf kubectl-ai_linux_amd64.tar.gz
-$ mv kubectl-ai /usr/local/bin/
-$ chmod +x /usr/local/bin/kubectl-ai
-
-$ kubectl plugin list                                                                                
-The following compatible plugins are available:
-/root/.krew/bin/kubectl-krew
-/root/.krew/bin/kubectl-ns
-/usr/local/bin/kubectl-ai
-/usr/local/bin/kubectl-kubeplugin
-
-$ nano ~/.zshrc
-export OPENAI_API_KEY="***************************"
-
-$ source ~/.zshrc
-
-$ export OPENAI_DEPLOYMENT_NAME="gpt-4"
-```
 
 3. Practice writing and testing prompts on a local cluster
 ```yaml
-$ k ai "get status of master node" --require-confirmation=false
+$ k ai "create an nginx deployment with 3 replicas"
 ✨ Attempting to apply the following manifest:
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: node-status-check
-  namespace: default
+  name: nginx-deployment
 spec:
-  containers:
-  - name: check-node-status
-    image: bitnami/kubectl:latest
-    command: ['/bin/bash', '-c', 'kubectl get node master -o jsonpath="{.status}"'] 
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-  restartPolicy: OnFailure
-
-$ mkdir yaml
-$ kubectl ai "create an nginx deployment with 3 replicas" --require-confirmation=false > yaml/app.yaml
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
 ```
 
 4. The resulting manifest in the yaml directory in the root of the repository.
